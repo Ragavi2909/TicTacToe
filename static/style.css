@@ -1,0 +1,128 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1e1e2e, #2b2b3d);
+    color: #f8f8f8;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+h1, h2, p {
+    color: #ffffff;
+    margin: 20px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #ff7c4d;
+}
+
+form, .board, .container {
+    background: #29293d;
+    border-radius: 20px;
+    padding: 30px;
+    margin: 20px auto;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+input, button {
+    padding: 12px 20px;
+    font-size: 16px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #3b3b4f;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    background-color: #4b4b5f;
+    border: 1px solid #ff7c4d;
+}
+
+button {
+    background: linear-gradient(90deg, #ff5500, #ff7c4d);
+    box-shadow: 0 4px 15px rgba(255, 85, 0, 0.4);
+}
+
+button:hover {
+    background: linear-gradient(90deg, #ff3300, #ff5500);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 85, 0, 0.6);
+}
+
+.board {
+    display: grid;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 30px;
+    background: #1f1f32;
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.cell {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(145deg, #2c2c45, #1f1f32);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.cell:hover {
+    background: linear-gradient(145deg, #3a3a4e, #2c2c45);
+    transform: scale(1.05);
+}
+
+.cell.taken {
+    pointer-events: none;
+    background: #3b3b4f;
+}
+
+.winning-cell {
+    background: linear-gradient(145deg, #4caf50, #388e3c) !important;
+    color: white;
+    box-shadow: 0 0 15px rgba(767, 175, 80, 0.7);
+}
+
+#winner {
+    font-size: 1.8rem;
+    margin-top: 25px;
+    font-weight: bold;
+    color: #ffc107;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@media screen and (max-width: 600px) {
+    .cell {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .board {
+        gap: 8px;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}

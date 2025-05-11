@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.334.0/font/lucide.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #1e1e2e, #2b2b3d);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #29293d;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile span {
+            font-size: 1.2rem;
+            color: #ff7c4d;
+        }
+
+        .profile a {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .profile a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background: #29293d;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ff7c4d;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.5rem;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 15px;
+            border-bottom: 1px solid #444;
+        }
+
+        .leaderboard-table th {
+            background: #3b3b4f;
+            color: #ff7c4d;
+        }
+
+        .leaderboard-table td {
+            background: #2c2c45;
+        }
+
+        .empty-message {
+            font-size: 1.5rem;
+            color: #ff7c4d;
+            margin: 20px 0;
+        }
+
+        .back-button {
+            margin-top: 30px;
+            padding: 18px 35px;
+            background: linear-gradient(90deg, #ff5500, #ff7c4d);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 85, 0, 0.5);
+        }
+
+        .back-button:hover {
+            background: linear-gradient(90deg, #ff3300, #ff5500);
+            transform: translateY(-4px);
+            box-shadow: 0 7px 25px rgba(255, 85, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <span>{{ username }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="container">
+        <h1>🏆 Leaderboard</h1>
+        {% if leaderboard %}
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Games played</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in range(leaderboard|length) %}
+                        <tr>
+                            <td>{{ i + 1 }}</td>
+                            <td>{{ leaderboard[i][0] }}</td>
+                            <td>{{ leaderboard[i][1] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-message">No games played yet. Start playing to see the leaderboard!</div>
+        {% endif %}
+        <a href="{{ url_for('mode_select') }}"><button class="back-button">Back to Mode Select</button></a>
+    </div>
+</body>
+</html>

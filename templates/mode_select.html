@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Select Game Mode</title>
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.334.0/font/lucide.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #1e1e2e, #2b2b3d);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #29293d;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile span {
+            font-size: 1.2rem;
+            color: #ff7c4d;
+        }
+
+        .profile a {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .profile a:hover {
+            text-decoration: underline;
+        }
+
+        .leaderboard-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #29293d;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .leaderboard-link a {
+            color: #ff7c4d;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard-link a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            background: #29293d;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ff7c4d;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-dropdown {
+            background: #3b3b4f;
+            border: 3px solid #ff5500;
+            border-radius: 12px;
+            padding: 20px;
+            font-size: 1.8rem;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .custom-dropdown:hover {
+            background: #4b4b5f;
+        }
+
+        .dropdown-options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: #3b3b4f;
+            border: 3px solid #ff5500;
+            border-top: none;
+            border-radius: 0 0 12px 12px;
+            font-size: 1.8rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .dropdown-options.open {
+            max-height: 500px;
+        }
+
+        .dropdown-options li {
+            padding: 18px 20px;
+            border-top: 1px solid #444;
+            cursor: pointer;
+            transition: background 0.2s;
+            position: relative;
+        }
+
+        .dropdown-options li:hover {
+            background: #4b4b5f;
+        }
+
+        .dropdown-options li::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 1rem;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            margin-left: 10px;
+        }
+
+        .dropdown-options li:hover::after {
+            opacity: 1;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: #ff5500;
+        }
+
+        .size-input {
+            margin: 20px 0;
+            color: #ddd;
+            display: none;
+        }
+
+        .size-input.active {
+            display: block;
+        }
+
+        input[type="number"] {
+            padding: 18px;
+            font-size: 1.8rem;
+            width: 150px;
+            text-align: center;
+            background: #3b3b4f;
+            color: #fff;
+            border: 3px solid #ff5500;
+            border-radius: 12px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #ff7c4d;
+        }
+
+        label {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        button[type="submit"] {
+            margin-top: 30px;
+            padding: 18px 35px;
+            background: linear-gradient(90deg, #ff5500, #ff7c4d);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 85, 0, 0.5);
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(90deg, #ff3300, #ff5500);
+            transform: translateY(-4px);
+            box-shadow: 0 7px 25px rgba(255, 85, 0, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <span>{{ username }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="leaderboard-link">
+        <a href="{{ url_for('show_leaderboard') }}">Leaderboard</a>
+    </div>
+    <div class="container">
+        <h1>🎮 Choose Game Mode</h1>
+        <form action="/player-setup" method="POST" onsubmit="return validateForm()">
+            <div class="mode-select" id="dropdownContainer">
+                <div class="custom-dropdown" onclick="toggleDropdown()">
+                    <span id="selectedMode">Select a mode</span>
+                    <span class="arrow">▼</span>
+                </div>
+                <ul class="dropdown-options" id="dropdownOptions">
+                    <li data-value="classic" data-tooltip="Standard 3×3 Tic Tac Toe">Classic Tic Tac Toe</li>
+                    <li data-value="reverse" data-tooltip="Matching 3-in-a-row loses the game">Reverse Tic Tac Toe</li>
+                    <li data-value="memory" data-tooltip="Symbols disappear after 2 seconds">Memory Mode</li>
+                    <li data-value="vs-computer" data-tooltip="Play against an AI opponent">Human vs Computer</li>
+                    <li data-value="grid" data-tooltip="Choose your own grid size (3×3 to 5×5)">Custom Grid Size</li>
+                </ul>
+                <input type="hidden" name="mode" id="modeInput">
+            </div>
+
+            <div class="size-input" id="size-input">
+                <label>Grid Size (3-5):</label>
+                <input type="number" name="size" id="gridSizeInput" min="3" max="5" value="3">
+            </div>
+
+            <button type="submit">Next</button>
+        </form>
+    </div>
+
+    <script>
+        const dropdown = document.getElementById('dropdownOptions');
+        const dropdownContainer = document.getElementById('dropdownContainer');
+        const selectedMode = document.getElementById('selectedMode');
+        const modeInput = document.getElementById('modeInput');
+        const sizeInput = document.getElementById('size-input');
+
+        function toggleDropdown() {
+            dropdown.classList.toggle('open');
+        }
+
+        dropdown.querySelectorAll('li').forEach(item => {
+            item.addEventListener('click', () => {
+                const value = item.getAttribute('data-value');
+                const text = item.textContent;
+
+                modeInput.value = value;
+                selectedMode.textContent = text;
+
+                dropdown.classList.remove('open');
+                sizeInput.classList.toggle('active', value === 'grid');
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!dropdownContainer.contains(e.target)) {
+                dropdown.classList.remove('open');
+            }
+        });
+
+        function validateForm() {
+            if (!modeInput.value) {
+                alert('Please select a game mode.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

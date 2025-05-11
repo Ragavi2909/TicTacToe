@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/lucide-static@0.334.0/font/lucide.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            background: linear-gradient(135deg, #1e1e2e, #2b2b3d);
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: #29293d;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 90%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            color: #ff7c4d;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            padding: 18px;
+            font-size: 1.8rem;
+            width: 100%;
+            text-align: center;
+            background: #3b3b4f;
+            color: #fff;
+            border: 3px solid #ff5500;
+            border-radius: 12px;
+            margin: 10px 0;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #ff7c4d;
+        }
+
+        button[type="submit"] {
+            margin-top: 20px;
+            padding: 18px 35px;
+            background: linear-gradient(90deg, #ff5500, #ff7c4d);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(255, 85, 0, 0.5);
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(90deg, #ff3300, #ff5500);
+            transform: translateY(-4px);
+            box-shadow: 0 7px 25px rgba(255, 85, 0, 0.7);
+        }
+
+        .flash-message {
+            color: #ff7c4d;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sign Up</h1>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-message">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="/signup">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+    </div>
+</body>
+</html>

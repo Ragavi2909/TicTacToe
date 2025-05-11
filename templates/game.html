@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.3.4/dist/tsparticles.confetti.min.js"></script>
+    <style>
+        .profile {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #29293d;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile span {
+            font-size: 1.2rem;
+            color: #ff7c4d;
+        }
+
+        .profile a {
+            color: #ff5500;
+            text-decoration: none;
+            font-size: 1rem;
+        }
+
+        .profile a:hover {
+            text-decoration: underline;
+        }
+
+        .leaderboard-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #29293d;
+            padding: 10px 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .leaderboard-link a {
+            color: #ff7c4d;
+            text-decoration: none;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard-link a:hover {
+            text-decoration: underline;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        #restart {
+            background: linear-gradient(90deg, #ff5500, #ff7c4d);
+        }
+
+        #restart:hover {
+            background: linear-gradient(90deg, #ff3300, #ff5500);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        #manual-refresh {
+            background: linear-gradient(90deg, #4d7cff, #4da8ff);
+        }
+
+        #manual-refresh:hover {
+            background: linear-gradient(90deg, #3366ff, #4d7cff);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <span>{{ username }}</span>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+    <div class="leaderboard-link">
+        <a href="{{ url_for('show_leaderboard') }}">Leaderboard</a>
+    </div>
+    <div class="container">
+        <h1>Tic Tac Toe</h1>
+        <p><strong>{{ player1 }}</strong> (X) vs <strong>{{ player2 }}</strong> (O)</p>
+    </div>
+    <div class="board" id="board"></div>
+
+    <p id="winner"></p>
+    <div class="button-container">
+        <button type="button" id="restart">Restart Game</button>
+        <button type="button" id="manual-refresh">Manual Refresh</button>
+    </div>
+
+    <script>
+        const mode = "{{ mode }}";
+        let gridSize = {{ size }};
+        const player1 = "{{ player1 }}";
+        const player2 = "{{ player2 }}";
+
+        let board = Array(gridSize * gridSize).fill("");
+        let currentPlayer = "X";
+        let gameActive = true;
+        let winningCombination = [];
+        let winLength = gridSize;
+
+        const boardElement = document.getElementById("board");
+        boardElement.style.gridTemplateColumns = `repeat(${gridSize}, 80px)`;
+        boardElement.style.gridTemplateRows = `repeat(${gridSize}, 80px)`;
+
+        function createBoard() {
+            boardElement.innerHTML = "";
+            board.forEach((_, index) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.setAttribute("data-index", index);
+                cell.addEventListener("click", () => makeMove(index, cell));
+                boardElement.appendChild(cell);
+            });
+        }
+
+        function makeMove(index, cellElement) {
+            if (!gameActive || board[index] !== "") return;
+
+            board[index] = currentPlayer;
+            cellElement.innerText = currentPlayer;
+            cellElement.classList.add("taken");
+
+            if (mode === "memory") {
+                setTimeout(() => {
+                    cellElement.innerText = "";
+                }, 2000);
+            }
+
+            let winnerCheck = checkWinner();
+            if (mode === "reverse" && winnerCheck) {
+                document.getElementById("winner").innerText =
+                    (currentPlayer === "X" ? player1 : player2) + " Loses! 😅";
+                highlightWinningCells();
+                startConfetti();
+                gameActive = false;
+                return;
+            } else if (winnerCheck) {
+                const winner = currentPlayer === "X" ? player1 : player2;
+                document.getElementById("winner").innerText = winner + " Wins! 🎉";
+                highlightWinningCells();
+                startConfetti();
+                gameActive = false;
+                updateLeaderboard(winner);
+                return;
+            }
+
+            if (!board.includes("") && !winnerCheck) {
+                document.getElementById("winner").innerText = "It's a Tie! 🤝";
+                gameActive = false;
+                return;
+            }
+
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+
+            if (mode === "vs-computer" && currentPlayer === "O" && gameActive) {
+                setTimeout(computerMove, 500);
+            }
+        }
+
+        function computerMove() {
+            let available = board.map((val, idx) => val === "" ? idx : null).filter(v => v !== null);
+            let move = available[Math.floor(Math.random() * available.length)];
+            const cell = boardElement.children[move];
+            makeMove(move, cell);
+        }
+
+        function checkWinner() {
+            let wins = [];
+
+            for (let r = 0; r < gridSize; r++) {
+                for (let len = winLength; len <= gridSize; len++) {
+                    for (let start = 0; start <= gridSize - len; start++) {
+                        let row = [];
+                        for (let c = start; c < start + len; c++) {
+                            row.push(r * gridSize + c);
+                        }
+                        wins.push(row);
+                    }
+                }
+            }
+
+            for (let c = 0; c < gridSize; c++) {
+                for (let len = winLength; len <= gridSize; len++) {
+                    for (let start = 0; start <= gridSize - len; start++) {
+                        let col = [];
+                        for (let r = start; r < start + len; r++) {
+                            col.push(r * gridSize + c);
+                        }
+                        wins.push(col);
+                    }
+                }
+            }
+
+            for (let len = winLength; len <= gridSize; len++) {
+                for (let startRow = 0; startRow <= gridSize - len; startRow++) {
+                    for (let startCol = 0; startCol <= gridSize - len; startCol++) {
+                        let diag1 = [];
+                        for (let i = 0; i < len; i++) {
+                            diag1.push((startRow + i) * gridSize + (startCol + i));
+                        }
+                        wins.push(diag1);
+                    }
+                }
+            }
+
+            for (let len = winLength; len <= gridSize; len++) {
+                for (let startRow = 0; startRow <= gridSize - len; startRow++) {
+                    for (let startCol = len - 1; startCol < gridSize; startCol++) {
+                        let diag2 = [];
+                        for (let i = 0; i < len; i++) {
+                            diag2.push((startRow + i) * gridSize + (startCol - i));
+                        }
+                        wins.push(diag2);
+                    }
+                }
+            }
+
+            for (let pattern of wins) {
+                const first = board[pattern[0]];
+                if (first && pattern.every(i => board[i] === first)) {
+                    winningCombination = pattern;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function highlightWinningCells() {
+            winningCombination.forEach(i => {
+                boardElement.children[i].classList.add("winning-cell");
+            });
+        }
+
+        function startConfetti() {
+            if (typeof confetti === "function") {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function updateLeaderboard(winner) {
+            console.log("Updating leaderboard for winner:", winner);
+            fetch('/update-leaderboard', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `winner=${encodeURIComponent(winner)}`
+            })
+            .then(response => response.text())
+            .then(data => console.log("Leaderboard update response:", data))
+            .catch(error => console.error("Error updating leaderboard:", error));
+        }
+
+        document.getElementById("restart").addEventListener("click", () => {
+            // Local reset logic
+            document.querySelectorAll(".cell").forEach(cell => {
+                cell.style.transition = "opacity 0.5s";
+                cell.style.opacity = 0;
+            });
+            setTimeout(() => {
+                board = Array(gridSize * gridSize).fill("");
+                gameActive = true;
+                currentPlayer = "X";
+                winningCombination = [];
+                document.getElementById("winner").innerText = "";
+                createBoard();
+                document.querySelectorAll(".cell").forEach(cell => {
+                    cell.style.opacity = 1;
+                    cell.classList.remove("taken", "winning-cell");
+                });
+            }, 600);
+
+            // Clear session data on the server side
+            fetch('/clear-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: ''
+            })
+            .then(response => response.text())
+            .then(data => console.log("Session cleared:", data))
+            .catch(error => console.error("Error clearing session:", error));
+        });
+
+        document.getElementById("manual-refresh").addEventListener("click", () => {
+            // Redirect to mode_select.html
+            window.location.href = "{{ url_for('mode_select') }}";
+        });
+
+        createBoard();
+    </script>
+    <script src="{{ url_for('static', filename='confetti.js') }}"></script>
+</body>
+</html>
